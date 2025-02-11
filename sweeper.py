@@ -1,4 +1,5 @@
 import random
+#look into pygame for gui
 # board the user cannot see
 board = [[0,0,0,0,0,0,0,0,0,0], #0 = no bomb, 
         [0,0,0,0,0,0,0,0,0,0],  #1 = bomb
@@ -81,6 +82,7 @@ while guess < (TotalRows*TotalCols-numMines):
     if board[row][col]==1:
         print("boom you died")
         displaySol()
+        break
     else:
         boardDisplay[row][col]=checkMinesAround(row,col)
         displayBoard()

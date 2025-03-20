@@ -1,3 +1,5 @@
+# proof of concept, no longer need this
+
 import random
 #look into pygame for gui
 # board the user cannot see

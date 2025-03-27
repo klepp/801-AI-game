@@ -206,27 +206,46 @@ class MinesweeperEnv: # This is just now for demo - ERIC setting up environment)
         """
         return 0.5
 
-    def get_location_score(self, r, c): # ERIC WORKING ON THIS
+    def get_location_score(self, r, c):
         """
-        Basic corner/edge/middle scoring. In the paper, eq. (4).
-        Doing a simple approach for demo just now:
-          corner => 0.8
-          edge   => 0.5
-          else   => 0.2
+        Compute the location score for cell (r, c) using Equation (4).
+        
+        formula_dict = {'corner': 4, 'edge': 6, 'middle': 8}
+        The formula for location score is formula_dict.key():
+          - If (r,c) is a dict.key:
+              score = 1 - (((m - f) / l) ** formula_dict.value())
+        
+        where:
+          m = total number of mines (self.num_mines)
+          f = number of flags used (0, because we don't flag)
+          l = number of covered cells remaining = (total cells - revealed_count)
+        
+        Returns a value between 0 and 1.
         """
-        is_corner = (r == 0 and c == 0) or \
-                    (r == 0 and c == self.cols-1) or \
-                    (r == self.rows-1 and c == 0) or \
-                    (r == self.rows-1 and c == self.cols-1)
-
+        m = self.num_mines
+        f = 0  # No flags are used in our application.
+        l = (self.rows * self.cols) - self.revealed_count
+        # To avoid division by zero
+        if l <= 0:
+            return 1.0
+    
+        # Determine cell position:
+        is_corner = ((r == 0 and c == 0) or 
+                     (r == 0 and c == self.cols - 1) or 
+                     (r == self.rows - 1 and c == 0) or 
+                     (r == self.rows - 1 and c == self.cols - 1))
+        
         if is_corner:
-            return 0.8
-        # check edge
-        elif r == 0 or c == 0 or r == self.rows-1 or c == self.cols-1:
-            return 0.5
+            exponent = 4
+        elif r == 0 or c == 0 or r == self.rows - 1 or c == self.cols - 1:
+            exponent = 6
         else:
-            return 0.2
-
+            exponent = 8
+    
+        score = 1 - (((m - f) / l) ** exponent)
+        # Return restricted score between 0 and 1
+        return max(0, min(score, 1))
+    
     def extract_sub_state(self, row, col):
         """
         Instead of directly returning display[row,col],
